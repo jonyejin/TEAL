@@ -20,7 +20,7 @@ TM_MODELS = [
     "toy",
 ]
 SCALE_FACTORS = [1.0]
-OBJ_STRS = ["total_flow", "min_max_link_util"]
+OBJ_STRS = ["total_flow", "min_max_link_util", "max_concurrent_flow"]
 
 PATH_FORM_HYPERPARAMS = (4, True, "min-hop")
 

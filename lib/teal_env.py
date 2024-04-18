@@ -181,6 +181,18 @@ class TealEnv(object):
                 action[self.p2e[0]], self.p2e[1]
                 )/self.obs[:-self.num_path_node]).max()
 
+        # added by Zoe
+        # The definition of MCF is "maximize the minimum fraction of demand satisfied across all demands"
+        elif self.obj == 'max_concurrent_flow':
+            # Aggregate traffic on each edge
+            edge_flows = torch_scatter.scatter(
+                action[self.p2e[0]], self.p2e[1], dim=0, reduce='sum'
+            )
+            # Calculate fraction of demand satisfied on each edge
+            # Objective is to maximize the minimum fraction across all edges
+            return (edge_flows / self.obs[:-self.num_path_node]).min()
+        # end Zoe
+
     def transform_raw_action(self, raw_action):
         """Return network flow allocation as action.
 
