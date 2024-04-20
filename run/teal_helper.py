@@ -75,15 +75,43 @@ for key, vals in GROUPED_BY_HOLDOUT_PROBLEMS.items():
     GROUPED_BY_HOLDOUT_PROBLEMS[key] = sorted(
         vals, key=lambda x: int(x[-1].split('_')[-3]))
 
-
+import glob
 def get_problems(args):
-    if (args.topo, args.tm_model, args.scale_factor) not in GROUPED_BY_PROBLEMS:
-        raise Exception('Traffic matrices not found')
-    problems = []
-    for topo_fname, tm_fname in GROUPED_BY_PROBLEMS[
-            (args.topo, args.tm_model, args.scale_factor)]:
-        problems.append((args.topo, topo_fname, tm_fname))
-    return problems
+    if args.perturbation_directory:
+        # Construct the path to the directory containing the traffic matrices
+        directory = os.path.join(
+            args.perturbation_directory,
+            args.topo[:-5],  # Assuming 'args.topo' ends with '.json' and needs to be stripped
+            args.noise_type,
+            str(args.noise_level)
+        )
+        #
+        # # Check if the directory exists
+        # if not os.path.exists(directory):
+        #     print("Directory does not exist:", directory)
+        #     raise Exception('Traffic matrix directory not found in perturbation directory')
+
+        # Fetch all .pkl files in the directory
+        files = glob.glob(os.path.join(directory, "*.pkl"))
+
+        # If no files are found, raise an exception
+        if not files:
+            print("No .pkl files found in directory:", directory)
+            raise Exception('No traffic matrices found in the specified directory')
+
+        topo_fname = os.path.join(TOPOLOGIES_DIR, args.topo)
+        # Create a list of tuples (topology, topology_filename, traffic_matrix_filename)
+        problems = [(args.topo, topo_fname, tm_file) for tm_file in files]
+        return problems
+
+    else:
+        if (args.topo, args.tm_model, args.scale_factor) not in GROUPED_BY_PROBLEMS:
+            raise Exception('Traffic matrices not found')
+        problems = []
+        for topo_fname, tm_fname in GROUPED_BY_PROBLEMS[
+                (args.topo, args.tm_model, args.scale_factor)]:
+            problems.append((args.topo, topo_fname, tm_fname))
+        return problems
 
 
 def get_args_and_problems(formatted_fname_template, additional_args=[]):
@@ -163,6 +191,18 @@ def get_args_and_problems(formatted_fname_template, additional_args=[]):
     # testing hyper-parameters
     parser.add_argument(
         '--failures', type=int, default=0, help='number of edge failures')
+
+    # Added by Zoe to test perturbation datas
+    parser.add_argument(
+        '--perturbation_directory', type=str, help='directory of perturbed test data'
+    )
+    parser.add_argument(
+        '--noise_type', type=str, help = 'perturbation type'
+    )
+    parser.add_argument(
+        '--noise_level', type=float, help='perturbation level'
+    )
+
 
     for add_arg in additional_args:
         name_or_flags, kwargs = add_arg[0], add_arg[1]

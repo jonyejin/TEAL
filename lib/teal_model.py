@@ -135,13 +135,13 @@ class Teal():
                 # get action
                 start_time = time.time()
                 raw_action = self.actor.act(obs)
-                runtime = time.time() - start_time
+                # runtime = time.time() - start_time
                 # get reward
                 reward, info = self.env.step(
                     raw_action, num_admm_step=num_admm_step)
                 # add runtime in transforming, ADMM, rounding
-                runtime += info['runtime']
-                runtime_list.append(runtime)
+                # runtime += info['runtime']
+                # runtime_list.append(runtime)
                 # show satisfied demand instead of total flow
                 obj_list.append(
                     reward.item()/problem_dict['total_demand']
@@ -149,7 +149,7 @@ class Teal():
 
                 # display avg runtime, obj
                 loop_obj.set_postfix({
-                    'runtime': '%.4f' % (sum(runtime_list)/len(runtime_list)),
+                    # 'runtime': '%.4f' % (sum(runtime_list)/len(runtime_list)),
                     'obj': '%.4f' % (sum(obj_list)/len(obj_list)),
                     })
 
@@ -182,6 +182,6 @@ class Teal():
                     problem_dict['dist_metric'],
                     problem_dict['obj'],
                     reward,
-                    runtime)
+                    None)
                 print_(result_line, file=results)
                 # break

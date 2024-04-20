@@ -6,6 +6,8 @@ import time
 import random
 from itertools import product
 
+import numpy
+import numpy as np
 from networkx.readwrite import json_graph
 
 import torch
@@ -100,7 +102,20 @@ class TealEnv(object):
 
         topo, topo_fname, tm_fname = self.problems[self.idx]
         with open(tm_fname, 'rb') as f:
+            print(tm_fname)
             tm = pickle.load(f)
+            if not isinstance(tm, numpy.ndarray):
+                tm = tm.to_numpy()
+        print("tm:", tm.shape)
+        print("capacity", self.capacity)
+
+        if tm.shape[1] == 1:
+            # Calculate the potential size of one dimension of the square
+            size = int(np.sqrt(tm.shape[0]))
+
+            # Check if the square of this size equals the total number of elements in the array
+            if size * size == tm.shape[0]:
+                tm = tm.reshape((size, size))
         # remove demands within nodes
         tm = torch.FloatTensor(
             [[ele]*self.num_path for i, ele in enumerate(tm.flatten())
@@ -112,6 +127,7 @@ class TealEnv(object):
                 random.sample(range(self.num_edge_node),
                 self.num_failure)).to(self.device)
             obs[idx_failure] = 0
+        print(obs.shape)
         return obs
 
     def _next_obs(self):
@@ -163,7 +179,7 @@ class TealEnv(object):
                 # total flow require no constraint violation
                 action = self.ADMM.tune_action(self.obs, action, num_admm_step)
                 action = self.round_action(action)
-            info['runtime'] = time.time() - start_time
+            # info['runtime'] = time.time() - start_time
             info['sol_mat'] = self.extract_sol_mat(action)
             reward = self.get_obj(action)
 
