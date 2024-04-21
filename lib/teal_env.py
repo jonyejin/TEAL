@@ -106,8 +106,8 @@ class TealEnv(object):
             tm = pickle.load(f)
             if not isinstance(tm, numpy.ndarray):
                 tm = tm.to_numpy()
-        print("tm:", tm.shape)
-        print("capacity", self.capacity)
+        # print("tm:", tm.shape)
+        # print("capacity", self.capacity)
 
         if tm.shape[1] == 1:
             # Calculate the potential size of one dimension of the square

@@ -14,7 +14,8 @@ PROBLEM_NAMES = [
     'UsCarrier.json',
     'Kdl.json',
     'ASN2k.json',
-    'Abilene.json'
+    'Abilene.json',
+    'GEANT.json'
 ]
 TM_MODELS = [
     "real",
