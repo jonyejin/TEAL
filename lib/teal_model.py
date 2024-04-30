@@ -184,4 +184,5 @@ class Teal():
                     reward,
                     None)
                 print_(result_line, file=results)
+                return problem_dict['obj']
                 # break

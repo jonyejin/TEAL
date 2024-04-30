@@ -127,7 +127,6 @@ class TealEnv(object):
                 random.sample(range(self.num_edge_node),
                 self.num_failure)).to(self.device)
             obs[idx_failure] = 0
-        print(obs.shape)
         return obs
 
     def _next_obs(self):
